@@ -21,7 +21,7 @@ object Main {
   def main(args: Array[String]): Unit = {
     AppLoop
       .statefulRenderLoop[AppState] {
-        case AppState.Loading(_, Nil) => (_) => AppState.startGame
+        case AppState.Loading(_, Nil) => (_) => AppState.Menu
         case AppState.Loading(loaded, loadNext :: remaining) =>
           val progress = loaded.toDouble / (loaded + remaining.size)
           (canvas: Canvas) => {
@@ -30,6 +30,15 @@ object Main {
             canvas.redraw()
             loadNext()
             AppState.Loading(loaded + 1, remaining)
+          }
+        case AppState.Menu =>
+          (canvas: Canvas) => {
+            val keyboardInput = canvas.getKeyboardInput()
+            canvas.clear()
+            Render.renderMenu(canvas)
+            canvas.redraw()
+            if (keyboardInput.isDown(Key.Enter)) AppState.startGame
+            else AppState.Menu
           }
         case state @ AppState.InGame(player, level, time) =>
           (canvas: Canvas) => {

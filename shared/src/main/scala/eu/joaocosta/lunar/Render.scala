@@ -30,6 +30,13 @@ object Render {
   }
 
   private var frame = 0
+  def renderMenu(out: MutableSurface): Unit = {
+    out.blit(backgroundPlane.clip(frame, 0, out.width, out.height))(0, 0)
+    out.blit(Resources.menu, Some(Color(0, 0, 0)))(0, 0)
+    frame = frame + 1
+  }
+
+
   def renderLevel(player: Player, level: Level)(out: MutableSurface): Unit = {
     val landerSprite = Plane
       .fromSurfaceWithFallback(Resources.lander.getSprite(if (!player.thrusters) 0 else 1 + frame % 2), Color(0, 0, 0))
@@ -54,6 +61,7 @@ object Render {
     out
       .blit(levelPlane, Some(Color(0, 0, 0)))(0, 0)
   }
+
 
   def renderHud(remainingTime: Int)(out: MutableSurface): Unit = {
     out.blit(Resources.hud, Some(Color(0, 0, 0)))(0, 0)

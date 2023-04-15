@@ -14,6 +14,7 @@ object Resources {
   lazy val space    = Image.loadBmpImage(Resource("assets/space.bmp")).get
   lazy val hud      = Image.loadBmpImage(Resource("assets/hud.bmp")).get
   lazy val gameover = Image.loadBmpImage(Resource("assets/gameover.bmp")).get
+  lazy val menu     = Image.loadBmpImage(Resource("assets/menu.bmp")).get
   lazy val numbers = SpriteSheet(
     Image.loadBmpImage(Resource("assets/numbers.bmp")).get,
     16,
@@ -26,6 +27,7 @@ object Resources {
     () => space,
     () => hud,
     () => gameover,
-    () => numbers
+    () => numbers,
+    () => menu
   )
 }
