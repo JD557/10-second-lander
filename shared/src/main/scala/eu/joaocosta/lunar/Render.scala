@@ -31,8 +31,6 @@ object Render {
 
   private var frame = 0
   def renderLevel(player: Player, level: Level)(out: MutableSurface): Unit = {
-    out.blit(backgroundPlane.toSurfaceView(out.width, out.height))(0, 0)
-
     val landerSprite = Plane
       .fromSurfaceWithFallback(Resources.lander.getSprite(if (!player.thrusters) 0 else 1 + frame % 2), Color(0, 0, 0))
       .translate(-16, -16)
@@ -43,6 +41,8 @@ object Render {
     val fixedPlayerY = (out.height - landerSprite.height) / 3
     val cameraX      = (fixedPlayerX - player.x).toInt
     val cameraY      = (fixedPlayerY - player.y).toInt
+
+    out.blit(backgroundPlane.translate(cameraX/8, cameraY/8).toSurfaceView(out.width, out.height))(0, 0)
     out
       .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX, fixedPlayerY)
     frame = frame + 1
