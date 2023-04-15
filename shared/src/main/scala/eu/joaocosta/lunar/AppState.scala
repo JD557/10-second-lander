@@ -7,14 +7,28 @@ object AppState {
   def startGame = AppState.InGame(Player(0, 0, 0, 0), Level.generate(util.Random), 999)
   final case class Loading(loaded: Int, remainingResouces: List[() => Any]) extends AppState
   final case class InGame(player: Player, level: Level, remainingTime: Int) extends AppState {
-    val touchedPad =
-      player.x >= level.padX && player.x + 48 < level.padX + 128 && player.y + 32 >= level.padY
-    val finished = touchedPad && !gameOver
+    private val playerSize     = 32
+    private val fullPlayerSize = 46
+    private val playerBorder   = (fullPlayerSize - playerSize) / 2
+    private val collisionH     = fullPlayerSize - playerBorder
+    private val padSize        = 64
+
+    val overRotated          = math.cos(player.rotation) < Constants.minCosRotation
+    val landingSpeedExceeded = player.vy >= Constants.maxTouchSpeed
+
+    val touchedPadPartial =
+      player.y + collisionH >= level.padY &&
+        player.x + fullPlayerSize - playerBorder >= level.padX &&
+        player.x + playerBorder < level.padX + padSize
+    val touchedPadFull =
+      touchedPadPartial &&
+        player.x + playerBorder + 5 >= level.padX &&
+        player.x + fullPlayerSize - playerBorder - 5 < level.padX + padSize
+    val finished = touchedPadFull && !gameOver
     val gameOver =
-      remainingTime <= 0 ||
-        (touchedPad && player.vy >= Constants.maxTouchSpeed) ||
-        (touchedPad && math.cos(player.rotation) < Constants.minCosRotation) ||
-        !touchedPad && player.y + 32 > level.groundLine(player.x)
+      remainingTime <= 0 || (touchedPadPartial && !touchedPadFull) ||
+        (touchedPadFull && (landingSpeedExceeded || overRotated)) ||
+        (player.y + collisionH) > level.groundLine(player.x + fullPlayerSize / 2)
   }
   final case class GameOver(lastState: InGame) extends AppState
 }

@@ -31,7 +31,7 @@ object Main {
             loadNext()
             AppState.Loading(loaded + 1, remaining)
           }
-        case AppState.InGame(player, level, time) =>
+        case state @ AppState.InGame(player, level, time) =>
           (canvas: Canvas) => {
             val keyboardInput = canvas.getKeyboardInput()
             canvas.clear()

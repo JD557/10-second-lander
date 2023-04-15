@@ -35,22 +35,21 @@ object Render {
       .fromSurfaceWithFallback(Resources.lander.getSprite(if (!player.thrusters) 0 else 1 + frame % 2), Color(0, 0, 0))
       .translate(-16, -16)
       .rotate(player.rotation)
-      .translate(24, 24)
-      .toSurfaceView(48, 48)
+      .translate(23, 23)
+      .toSurfaceView(46, 46)
     val fixedPlayerX = (out.width - landerSprite.width) / 2
     val fixedPlayerY = (out.height - landerSprite.height) / 3
     val cameraX      = (fixedPlayerX - player.x).toInt
     val cameraY      = (fixedPlayerY - player.y).toInt
 
-    out.blit(backgroundPlane.translate(cameraX/8, cameraY/8).toSurfaceView(out.width, out.height))(0, 0)
+    out.blit(backgroundPlane.clip(-cameraX/8, -cameraY/8, out.width, out.height))(0, 0)
     out
       .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX, fixedPlayerY)
     frame = frame + 1
 
     val levelPlane = Plane
       .fromFunction((x, y) => if (y >= level.groundLine(x)) Color(255, 255, 255) else Color(0, 0, 0))
-      .translate(cameraX, cameraY)
-      .toSurfaceView(out.width, out.height)
+      .clip(-cameraX, -cameraY, out.width, out.height)
     out.blit(Resources.pad, Some(Color(0, 0, 0)))(level.padX + cameraX, level.padY + cameraY)
     out
       .blit(levelPlane, Some(Color(0, 0, 0)))(0, 0)
@@ -75,7 +74,7 @@ object Render {
         val gray = math.max(math.max(c.r, c.g), c.b)
         Color.grayscale(gray / 16)
       ))(0, 0)
-    renderHud(0)(out)
+    renderHud(lastState.remainingTime)(out)
     val glitchLine = util.Random.nextInt(Resources.gameover.height)
     val glitchDelta = util.Random.nextInt(10)-5
     val glitchedGameOver = Resources.gameover.view.contramap { (x, y) => 
