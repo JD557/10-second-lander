@@ -11,6 +11,8 @@ object Main {
   val canvasSettings =
     Canvas.Settings(width = Constants.canvasWidth, height = Constants.canvasHeight, clearColor = Color(0, 0, 0))
 
+  val frameRate = LoopFrequency.hz60
+
   def main(args: Array[String]): Unit = {
     AppLoop
       .statefulRenderLoop[AppState] {
@@ -24,12 +26,12 @@ object Main {
             loadNext()
             AppState.Loading(loaded + 1, remaining)
           }
-        case AppState.InGame(player, level) =>
+        case AppState.InGame(player, level, time) =>
           (canvas: Canvas) => {
             val keyboardInput = canvas.getKeyboardInput()
             canvas.clear()
             Render.renderLevel(player, level)(canvas)
-            Render.renderHud(canvas)
+            Render.renderHud(time)(canvas)
             canvas.redraw()
             val newPlayer = player
               .pipe(p =>
@@ -41,7 +43,7 @@ object Main {
                 if (keyboardInput.isDown(Key.Space) || keyboardInput.isDown(Key.Up)) p.thrust
                 else p.stop
               )
-            val newState = AppState.InGame(newPlayer.tick, level)
+            val newState = AppState.InGame(newPlayer.tick, level, time - (frameRate.millis / 10).toInt)
             if (newState.gameOver) AppState.GameOver(newState)
             else if (newState.finished) AppState.startGame
             else newState
@@ -56,7 +58,7 @@ object Main {
             else AppState.GameOver(lastState)
           }
       }
-      .configure(canvasSettings, LoopFrequency.hz60, AppState.initial)
+      .configure(canvasSettings, frameRate, AppState.initial)
       .run()
   }
 }

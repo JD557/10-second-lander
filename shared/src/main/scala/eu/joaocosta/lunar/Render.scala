@@ -56,8 +56,16 @@ object Render {
       .blit(levelPlane, Some(Color(0, 0, 0)))(0, 0)
   }
 
-  def renderHud(out: MutableSurface): Unit = {
+  def renderHud(remainingTime: Int)(out: MutableSurface): Unit = {
     out.blit(Resources.hud, Some(Color(0, 0, 0)))(0, 0)
+    val sec       = remainingTime / 100
+    val dsec      = (remainingTime / 10) % 10
+    val csec      = remainingTime        % 10
+    val textStart = (out.width - 64) / 2
+    out.blit(Resources.numbers.getSprite(sec + 1), Some(Color(0, 0, 0)))(textStart + 0, 16)
+    out.blit(Resources.numbers.getSprite(0), Some(Color(0, 0, 0)))(textStart + 16, 16)
+    out.blit(Resources.numbers.getSprite(dsec + 1), Some(Color(0, 0, 0)))(textStart + 32, 16)
+    out.blit(Resources.numbers.getSprite(csec + 1), Some(Color(0, 0, 0)))(textStart + 48, 16)
   }
 
   def renderGameOver(lastState: AppState.InGame)(out: MutableSurface): Unit = {
@@ -76,7 +84,7 @@ object Render {
     renderLevel(lastState.player, lastState.level)(buffer)
     val blurred = blur(blur(buffer.view).precompute)
     out.blit(blurred)(0, 0)
-    renderHud(out)
+    renderHud(0)(out)
     out.blit(Resources.gameover, Some(Color(0, 0, 0)))((out.width - Resources.gameover.width) / 2, out.height / 2)
   }
 }
