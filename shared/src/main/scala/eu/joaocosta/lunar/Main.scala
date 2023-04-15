@@ -69,6 +69,7 @@ object Main {
             Render.renderGameOver(lastState)(canvas)
             canvas.redraw()
             if (keyboardInput.isDown(Key.Enter)) AppState.startGame
+            else if (keyboardInput.isDown(Key.Escape)) AppState.Menu
             else AppState.GameOver(lastState)
           }
       }

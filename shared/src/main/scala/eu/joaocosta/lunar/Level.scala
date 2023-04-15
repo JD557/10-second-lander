@@ -13,7 +13,7 @@ object Level {
     val lowFreqPhase = random.nextDouble() * 2 * math.Pi
     val highFreq     = 16 + random.nextInt(16)
     val maxDelta     = 25
-    val constHeight  = 300
+    val constHeight  = 250
     val minHeight    = constHeight - maxDelta
     val maxHeight    = constHeight + maxDelta
     val height = { (x: Double) =>
