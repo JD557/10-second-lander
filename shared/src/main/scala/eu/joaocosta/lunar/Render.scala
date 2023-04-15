@@ -36,30 +36,42 @@ object Render {
     frame = frame + 1
   }
 
-
   def renderLevel(player: Player, level: Level)(out: MutableSurface): Unit = {
+    val distanceX = math.abs(player.x - level.padX)
+    val distanceY = math.abs(player.y - level.padY)
+    val relDistX = distanceX / (out.width / 2)
+    val relDistY = distanceY / (out.height / 2)
+    val scale = 1.0 / math.max(Constants.minRelDist, math.min(math.max(relDistX, relDistY), Constants.maxRelDist))
+    renderLevelScaled(player, level, scale)(out)
+  }
+
+
+  def renderLevelScaled(player: Player, level: Level, scale: Double = 1.0)(out: MutableSurface): Unit = {
+    val buffer = new RamSurface(1 + (out.width / scale).toInt, 1 + (out.height / scale).toInt, Color(0, 0, 0))
     val landerSprite = Plane
       .fromSurfaceWithFallback(Resources.lander.getSprite(if (!player.thrusters) 0 else 1 + frame % 2), Color(0, 0, 0))
       .translate(-16, -16)
       .rotate(player.rotation)
       .translate(23, 23)
       .toSurfaceView(46, 46)
-    val fixedPlayerX = (out.width - landerSprite.width) / 2
-    val fixedPlayerY = (out.height - landerSprite.height) / 3
+    val fixedPlayerX = (buffer.width - landerSprite.width) / 2
+    val fixedPlayerY = (buffer.height - landerSprite.height) / 3
     val cameraX      = (fixedPlayerX - player.x).toInt
     val cameraY      = (fixedPlayerY - player.y).toInt
 
-    out.blit(backgroundPlane.clip(-cameraX/8, -cameraY/8, out.width, out.height))(0, 0)
-    out
-      .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX, fixedPlayerY)
+    buffer
+      .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX.toInt, fixedPlayerY.toInt)
     frame = frame + 1
 
     val levelPlane = Plane
       .fromFunction((x, y) => if (y >= level.groundLine(x)) Color(255, 255, 255) else Color(0, 0, 0))
-      .clip(-cameraX, -cameraY, out.width, out.height)
-    out.blit(Resources.pad, Some(Color(0, 0, 0)))(level.padX + cameraX, level.padY + cameraY)
-    out
+      .clip(-cameraX, -cameraY, buffer.width, buffer.height)
+    buffer.blit(Resources.pad, Some(Color(0, 0, 0)))(level.padX + cameraX, level.padY + cameraY)
+    buffer
       .blit(levelPlane, Some(Color(0, 0, 0)))(0, 0)
+
+    out.blit(backgroundPlane.clip(-cameraX/8, -cameraY/8, out.width, out.height))(0, 0)
+    out.blit(buffer.view.scale(scale), Some(Color(0, 0, 0)))(0, 0)
   }
 
 
