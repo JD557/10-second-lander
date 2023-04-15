@@ -16,7 +16,14 @@ object Main {
       scale = Some(2)
     )
 
+  val fullScreenSettings = canvasSettings.copy(fullScreen = true, scale = None)
+
   val frameRate = LoopFrequency.hz60
+
+  def toggleFullScreen(canvas: Canvas): Unit = {
+    if (canvas.canvasSettings.fullScreen) canvas.changeSettings(canvasSettings)
+    else canvas.changeSettings(fullScreenSettings)
+  }
 
   def main(args: Array[String]): Unit = {
     AppLoop
@@ -34,6 +41,7 @@ object Main {
         case AppState.Menu =>
           (canvas: Canvas) => {
             val keyboardInput = canvas.getKeyboardInput()
+            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()
             Render.renderMenu(canvas)
             canvas.redraw()
@@ -43,6 +51,7 @@ object Main {
         case state @ AppState.InGame(player, level, time) =>
           (canvas: Canvas) => {
             val keyboardInput = canvas.getKeyboardInput()
+            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()
             Render.renderLevel(player, level)(canvas)
             Render.renderHud(time)(canvas)
@@ -65,6 +74,7 @@ object Main {
         case AppState.GameOver(lastState) =>
           (canvas: Canvas) => {
             val keyboardInput = canvas.getKeyboardInput()
+            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()
             Render.renderGameOver(lastState)(canvas)
             canvas.redraw()
