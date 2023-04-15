@@ -25,6 +25,20 @@ object Main {
     else canvas.changeSettings(fullScreenSettings)
   }
 
+  val frameCounter = {
+    var frameNumber: Int = 0
+    var timer            = System.currentTimeMillis
+    () => {
+      frameNumber += 1
+      if (frameNumber % 10 == 0) {
+        val currTime = System.currentTimeMillis()
+        val fps      = 10.0 / ((currTime - timer) / 1000.0)
+        println("FPS:" + fps)
+        timer = System.currentTimeMillis()
+      }
+    }
+  }
+
   def main(args: Array[String]): Unit = {
     AppLoop
       .statefulRenderLoop[AppState] {
@@ -50,6 +64,7 @@ object Main {
           }
         case state @ AppState.InGame(player, level, time) =>
           (canvas: Canvas) => {
+            frameCounter()
             val keyboardInput = canvas.getKeyboardInput()
             if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()

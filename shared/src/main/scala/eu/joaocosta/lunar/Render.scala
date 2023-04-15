@@ -1,5 +1,7 @@
 package eu.joaocosta.lunar
 
+import scala.collection.mutable
+
 import eu.joaocosta.minart.graphics._
 
 object Render {
@@ -47,28 +49,30 @@ object Render {
 
 
   def renderLevelScaled(player: Player, level: Level, scale: Double = 1.0)(out: MutableSurface): Unit = {
-    val buffer = new RamSurface(1 + (out.width / scale).toInt, 1 + (out.height / scale).toInt, Color(0, 0, 0))
+    val bufferWidth = 1 + (out.width / scale).toInt
+    val bufferHeight = 1 + (out.height / scale).toInt
     val landerSprite = Plane
       .fromSurfaceWithFallback(Resources.lander.getSprite(if (!player.thrusters) 0 else 1 + frame % 2), Color(0, 0, 0))
       .translate(-16, -16)
       .rotate(player.rotation)
       .translate(23, 23)
       .toSurfaceView(46, 46)
-    val fixedPlayerX = (buffer.width - landerSprite.width) / 2
-    val fixedPlayerY = (buffer.height - landerSprite.height) / 3
+    val fixedPlayerX = (bufferWidth - landerSprite.width) / 2
+    val fixedPlayerY = (bufferHeight - landerSprite.height) / 3
     val cameraX      = (fixedPlayerX - player.x).toInt
     val cameraY      = (fixedPlayerY - player.y).toInt
 
+    val buffer = Resources.moon.view.repeating
+      .flatMap{
+        val memoized: mutable.Map[Int, Int] = mutable.Map[Int, Int]()
+        (c: Color) => (x: Int, y: Int) => if (y >= memoized.getOrElseUpdate(x, level.groundLine(x).toInt)) c else Color(0, 0, 0)
+      }
+      .clip(-cameraX, -cameraY, bufferWidth, bufferHeight)
+      .toRamSurface()
+    buffer.blit(Resources.pad, Some(Color(0, 0, 0)))(level.padX + cameraX, level.padY + cameraY)
     buffer
       .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX.toInt, fixedPlayerY.toInt)
     frame = frame + 1
-
-    val levelPlane = Resources.moon.view.repeating
-      .flatMap((c: Color) => (x: Int, y: Int) => if (y >= level.groundLine(x)) c else Color(0, 0, 0))
-      .clip(-cameraX, -cameraY, buffer.width, buffer.height)
-    buffer.blit(Resources.pad, Some(Color(0, 0, 0)))(level.padX + cameraX, level.padY + cameraY)
-    buffer
-      .blit(levelPlane, Some(Color(0, 0, 0)))(0, 0)
 
     out.blit(backgroundPlane.clip(-cameraX/8, -cameraY/8, out.width, out.height))(0, 0)
     out.blit(buffer.view.scale(scale), Some(Color(0, 0, 0)))(0, 0)
