@@ -63,8 +63,8 @@ object Render {
       .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX.toInt, fixedPlayerY.toInt)
     frame = frame + 1
 
-    val levelPlane = Plane
-      .fromFunction((x, y) => if (y >= level.groundLine(x)) Color(255, 255, 255) else Color(0, 0, 0))
+    val levelPlane = Resources.moon.view.repeating
+      .flatMap((c: Color) => (x: Int, y: Int) => if (y >= level.groundLine(x)) c else Color(0, 0, 0))
       .clip(-cameraX, -cameraY, buffer.width, buffer.height)
     buffer.blit(Resources.pad, Some(Color(0, 0, 0)))(level.padX + cameraX, level.padY + cameraY)
     buffer

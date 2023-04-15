@@ -25,6 +25,7 @@ object Resources {
   lazy val hud      = Image.loadBmpImage(Resource("assets/hud.bmp")).get
   lazy val gameover = Image.loadBmpImage(Resource("assets/gameover.bmp")).get
   lazy val menu     = Image.loadBmpImage(Resource("assets/menu.bmp")).get
+  lazy val moon     = Image.loadBmpImage(Resource("assets/moon.bmp")).get
 
   val allResources: List[() => Any] = List(
     () => lander,
@@ -33,6 +34,7 @@ object Resources {
     () => space,
     () => hud,
     () => gameover,
-    () => menu
+    () => menu,
+    () => moon
   )
 }
