@@ -7,7 +7,7 @@ object Constants {
   val rotationSpeed  = 0.05
   val gravity        = 0.025
   val thrust         = 0.1
-  val maxTouchSpeed  = 1.5
+  val maxTouchSpeed  = 1.25
   val minCosRotation = 0.90
 
   val minRelDist = 1.0
