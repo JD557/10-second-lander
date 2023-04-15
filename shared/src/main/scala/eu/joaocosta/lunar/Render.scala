@@ -75,7 +75,7 @@ object Render {
   }
 
 
-  def renderHud(remainingTime: Int)(out: MutableSurface): Unit = {
+  def renderHud(remainingTime: Int, speedWarning: Boolean, angleWarning: Boolean)(out: MutableSurface): Unit = {
     out.blit(Resources.hud, Some(Color(0, 0, 0)))(0, 0)
     val sec       = remainingTime / 100
     val dsec      = (remainingTime / 10) % 10
@@ -85,6 +85,8 @@ object Render {
     out.blit(Resources.numbers.getSprite(0), Some(Color(0, 0, 0)))(textStart + 16, 16)
     out.blit(Resources.numbers.getSprite(dsec + 1), Some(Color(0, 0, 0)))(textStart + 32, 16)
     out.blit(Resources.numbers.getSprite(csec + 1), Some(Color(0, 0, 0)))(textStart + 48, 16)
+    out.blit(Resources.warnings.getSprite(if (speedWarning) 1 else 0, 1), Some(Color(0, 0, 0)))(432, 227)
+    out.blit(Resources.warnings.getSprite(if (angleWarning) 1 else 0, 0), Some(Color(0, 0, 0)))(432, 243)
   }
 
   def renderGameOver(lastState: AppState.InGame)(out: MutableSurface): Unit = {
@@ -94,7 +96,7 @@ object Render {
         val gray = math.max(math.max(c.r, c.g), c.b)
         Color.grayscale(gray / 16)
       ))(0, 0)
-    renderHud(lastState.remainingTime)(out)
+    renderHud(lastState.remainingTime, lastState.landingSpeedExceeded, lastState.overRotated)(out)
     val glitchLine = util.Random.nextInt(Resources.gameover.height)
     val glitchDelta = util.Random.nextInt(10)-5
     val glitchedGameOver = Resources.gameover.view.contramap { (x, y) => 

@@ -54,7 +54,7 @@ object Main {
             if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()
             Render.renderLevel(player, level)(canvas)
-            Render.renderHud(time)(canvas)
+            Render.renderHud(time, state.landingSpeedExceeded, state.overRotated)(canvas)
             canvas.redraw()
             val newPlayer = player
               .pipe(p =>
