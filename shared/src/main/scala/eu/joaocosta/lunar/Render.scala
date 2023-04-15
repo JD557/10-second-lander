@@ -70,21 +70,18 @@ object Render {
 
   def renderGameOver(lastState: AppState.InGame)(out: MutableSurface): Unit = {
     val buffer = new RamSurface(out.width, out.height, Color(0, 0, 0))
-    def blur(surface: SurfaceView): SurfaceView = surface.coflatMap { surface =>
-      val p1 = surface.getPixelOrElse(0, 0, Color(0, 0, 0))
-      val p2 = surface.getPixelOrElse(0, 1, Color(0, 0, 0))
-      val p3 = surface.getPixelOrElse(1, 0, Color(0, 0, 0))
-      val p4 = surface.getPixelOrElse(1, 1, Color(0, 0, 0))
-      Color(
-        p1.r / 4 + p2.r / 4 + p3.r / 4 + p4.r / 4,
-        p1.g / 4 + p2.g / 4 + p3.g / 4 + p4.g / 4,
-        p1.b / 4 + p2.b / 4 + p3.b / 4 + p4.b / 4
-      )
-    }
     renderLevel(lastState.player, lastState.level)(buffer)
-    val blurred = blur(blur(buffer.view).precompute)
-    out.blit(blurred)(0, 0)
+    out.blit(buffer.view.map(c => 
+        val gray = math.max(math.max(c.r, c.g), c.b)
+        Color.grayscale(gray / 16)
+      ))(0, 0)
     renderHud(0)(out)
-    out.blit(Resources.gameover, Some(Color(0, 0, 0)))((out.width - Resources.gameover.width) / 2, out.height / 2)
+    val glitchLine = util.Random.nextInt(Resources.gameover.height)
+    val glitchDelta = util.Random.nextInt(10)-5
+    val glitchedGameOver = Resources.gameover.view.contramap { (x, y) => 
+      if (y == glitchLine) (x - glitchDelta, y)
+      else (x, y)
+    }.toSurfaceView(Resources.gameover.width, Resources.gameover.height)
+    out.blit(glitchedGameOver, Some(Color(0, 0, 0)))((out.width - Resources.gameover.width) / 2, out.height / 2)
   }
 }
