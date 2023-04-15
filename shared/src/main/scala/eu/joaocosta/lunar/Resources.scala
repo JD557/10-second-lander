@@ -10,12 +10,16 @@ object Resources {
     32,
     32
   )
-  lazy val pad   = Image.loadBmpImage(Resource("assets/pad.bmp")).get
-  lazy val space = Image.loadBmpImage(Resource("assets/space.bmp")).get
+  lazy val pad      = Image.loadBmpImage(Resource("assets/pad.bmp")).get
+  lazy val space    = Image.loadBmpImage(Resource("assets/space.bmp")).get
+  lazy val hud      = Image.loadBmpImage(Resource("assets/hud.bmp")).get
+  lazy val gameover = Image.loadBmpImage(Resource("assets/gameover.bmp")).get
 
   val allResources: List[() => Any] = List(
     () => lander,
     () => pad,
-    () => space
+    () => space,
+    () => hud,
+    () => gameover
   )
 }

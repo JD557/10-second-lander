@@ -29,6 +29,7 @@ object Main {
             val keyboardInput = canvas.getKeyboardInput()
             canvas.clear()
             Render.renderLevel(player, level)(canvas)
+            Render.renderHud(canvas)
             canvas.redraw()
             val newPlayer = player
               .pipe(p =>

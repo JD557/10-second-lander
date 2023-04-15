@@ -56,6 +56,10 @@ object Render {
       .blit(levelPlane, Some(Color(0, 0, 0)))(0, 0)
   }
 
+  def renderHud(out: MutableSurface): Unit = {
+    out.blit(Resources.hud, Some(Color(0, 0, 0)))(0, 0)
+  }
+
   def renderGameOver(lastState: AppState.InGame)(out: MutableSurface): Unit = {
     val buffer = new RamSurface(out.width, out.height, Color(0, 0, 0))
     def blur(surface: SurfaceView): SurfaceView = surface.coflatMap { surface =>
@@ -72,5 +76,7 @@ object Render {
     renderLevel(lastState.player, lastState.level)(buffer)
     val blurred = blur(blur(buffer.view).precompute)
     out.blit(blurred)(0, 0)
+    renderHud(out)
+    out.blit(Resources.gameover, Some(Color(0, 0, 0)))((out.width - Resources.gameover.width) / 2, out.height / 2)
   }
 }
