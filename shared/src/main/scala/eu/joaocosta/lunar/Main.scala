@@ -9,7 +9,12 @@ import scala.util.chaining._
 
 object Main {
   val canvasSettings =
-    Canvas.Settings(width = Constants.canvasWidth, height = Constants.canvasHeight, clearColor = Color(0, 0, 0))
+    Canvas.Settings(
+      width = Constants.canvasWidth,
+      height = Constants.canvasHeight,
+      clearColor = Color(0, 0, 0),
+      scale = Some(2)
+    )
 
   val frameRate = LoopFrequency.hz60
 

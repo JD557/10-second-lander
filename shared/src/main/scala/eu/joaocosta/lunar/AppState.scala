@@ -4,7 +4,7 @@ sealed trait AppState
 
 object AppState {
   val initial   = Loading(0, Resources.allResources)
-  val startGame = AppState.InGame(Player(0, 0, 0, 0), Level(_ => 200, 0), 999)
+  def startGame = AppState.InGame(Player(0, 0, 0, 0), Level.generate(util.Random), 999)
   final case class Loading(loaded: Int, remainingResouces: List[() => Any]) extends AppState
   final case class InGame(player: Player, level: Level, remainingTime: Int) extends AppState {
     val touchedPad =
