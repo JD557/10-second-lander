@@ -3,18 +3,20 @@ package eu.joaocosta.lunar
 final case class Level(
     number: Int,
     groundLine: Double => Double,
-    padX: Int
+    padX: Int,
+    night: Boolean
 ) {
   val padY = groundLine(padX).toInt - 8
 }
 
 object Level {
   def generate(number: Int, random: util.Random) = {
-    val (hills, dificultyMod) = number match {
-      case n if n <= 2 => (true, 0)
-      case n if n <= 4 => (false, 0)
-      case n if n <= 6 => (false, 1)
-      case _           => (false, 2)
+    val (hills, dificultyMod, night) = number match {
+      case n if n <= 2 => (true, 0, false)
+      case n if n <= 4 => (false, 0, false)
+      case n if n <= 6 => (false, 1, false)
+      case n if n <= 9 => (false, 2, false)
+      case _           => (false, 2, true)
     }
 
     val padRange = 256 + 64 * dificultyMod
@@ -44,6 +46,6 @@ object Level {
         if (hills) thisHeight else -thisHeight
       }
     }
-    new Level(number, height, padX)
+    new Level(number, height, padX, night)
   }
 }

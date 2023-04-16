@@ -62,20 +62,28 @@ object Render {
     val cameraX      = (fixedPlayerX - player.x).toInt
     val cameraY      = (fixedPlayerY - player.y).toInt
 
-    val buffer = Resources.moon.view.repeating
+    val moonSurfacePlane = 
+      if (level.night) Plane.fromFunction { (x, y) =>
+        val dx = player.x + 23 - x
+        val dy = player.y + 23 - y
+        if (dx*dx + dy*dy > (128 * 128)) Color(0, 0, 0)
+        else Color(34, 32, 52)
+      }
+      else (Resources.moon.view.repeating)
+    val buffer = moonSurfacePlane
       .flatMap{
         val memoized: mutable.Map[Int, Int] = mutable.Map[Int, Int]()
-        (c: Color) => (x: Int, y: Int) => if (y >= memoized.getOrElseUpdate(x, level.groundLine(x).toInt)) c else Color(0, 0, 0)
+        (c: Color) => (x: Int, y: Int) => if (y >= memoized.getOrElseUpdate(x, level.groundLine(x).toInt)) c else Color(255, 0, 255)
       }
       .clip(-cameraX, -cameraY, bufferWidth, bufferHeight)
       .toRamSurface()
-    buffer.blit(Resources.pad, Some(Color(0, 0, 0)))(level.padX + cameraX, level.padY + cameraY)
+    buffer.blit(Resources.pad.getSprite(if (level.night) 1 else 0), Some(Color(255, 0, 255)))(level.padX + cameraX, level.padY + cameraY)
     buffer
       .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX.toInt, fixedPlayerY.toInt)
     frame = frame + 1
 
     out.blit(backgroundPlane.clip(-cameraX/8, -cameraY/8, out.width, out.height))(0, 0)
-    out.blit(buffer.view.scale(scale), Some(Color(0, 0, 0)))(0, 0)
+    out.blit(buffer.view.scale(scale), Some(Color(255, 0, 255)))(0, 0)
   }
 
 

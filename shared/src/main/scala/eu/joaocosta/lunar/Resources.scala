@@ -20,7 +20,11 @@ object Resources {
     38,
     12
   )
-  lazy val pad      = Image.loadBmpImage(Resource("assets/pad.bmp")).get
+  lazy val pad = SpriteSheet(
+    Image.loadBmpImage(Resource("assets/pad.bmp")).get,
+    Constants.padSize,
+    8
+  )
   lazy val space    = Image.loadBmpImage(Resource("assets/space.bmp")).get
   lazy val hud      = Image.loadBmpImage(Resource("assets/hud.bmp")).get
   lazy val gameover = Image.loadBmpImage(Resource("assets/gameover.bmp")).get
