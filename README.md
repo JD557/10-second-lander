@@ -1,7 +1,9 @@
 10 Second Lander
 =================
 
-Game developed for [Mini Jam 130](https://itch.io/jam/mini-jam-130-lunar) 48h Compo (Theme: Lunar / 10 Seconds)
+Game developed for [Mini Jam 130](https://itch.io/jam/mini-jam-130-lunar) (Theme: Lunar / 10 Seconds)
+
+[Game Page](https://jd557.itch.io/10-second-lander)
 
 # How to Play
 
@@ -11,6 +13,7 @@ Watch out to not crash into anything and make sure to:
 - Land upright
 - Land with all feet on the pad
 
+## Controls
 - **Left/Right arrows**: Rotate your ship
 - **Space/Up Arrow**: Engage thrusters
 
