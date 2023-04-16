@@ -6,7 +6,14 @@ final case class Level(
     padX: Int,
     night: Boolean
 ) {
-  val padY = groundLine(padX).toInt - 8
+  val padY = {
+    math
+      .min(
+        groundLine(padX),
+        math.min(groundLine(padX + Constants.padSize / 2), groundLine(padX + Constants.padSize))
+      )
+      .toInt - 8
+  }
 }
 
 object Level {
@@ -40,11 +47,13 @@ object Level {
       val candidates =
         if (random.nextBoolean) (-padRange to (padRange - Constants.padSize) by 4)
         else (-padRange to (padRange - Constants.padSize) by 4).reverse
-      candidates.minBy { x =>
-        val thisHeight = (height(x) + height(x + Constants.padSize / 2) + height(x + Constants.padSize)) / 3
-        // math.min(thisHeight - minHeight, maxHeight - thisHeight)
-        if (hills) thisHeight else -thisHeight
-      }
+      candidates
+        .filter(x => x < -64 || x > 64)
+        .minBy { x =>
+          val thisHeight = (height(x) + height(x + Constants.padSize / 2) + height(x + Constants.padSize)) / 3
+          // math.min(thisHeight - minHeight, maxHeight - thisHeight)
+          if (hills) thisHeight else -thisHeight
+        }
     }
     new Level(number, height, padX, night)
   }
