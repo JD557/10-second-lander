@@ -74,8 +74,9 @@ object Render {
       .clip(-cameraX, -cameraY, bufferWidth, bufferHeight)
       .toRamSurface()
     (0 until buffer.width - 1 by 2).foreach { x =>
-      val height = level.groundLine(x - cameraX) + cameraY
-      buffer.fillRegion(x, 0, 2, math.min(height.toInt, bufferHeight - 1), Color(255, 0, 255))
+      val height = (level.groundLine(x - cameraX) + cameraY).toInt
+      buffer.fillRegion(x, 0, 2, math.min(height, bufferHeight - 1), Color(255, 0, 255))
+      buffer.fillRegion(x, height, 2, math.min(3, bufferHeight - height - 4), Color(105, 106, 106))
     }
     buffer.blit(Resources.pad.getSprite(if (level.night) 1 else 0), Some(Color(255, 0, 255)))(level.padX + cameraX, level.padY + cameraY)
     buffer
