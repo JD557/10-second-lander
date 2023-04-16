@@ -13,6 +13,8 @@ object Constants {
   val maxTouchSpeed  = 1.25 * 2
   val minCosRotation = 0.90
 
+  val padSize = 64
+
   val minRelDist = 1.0
   val maxRelDist = 1.5
 }

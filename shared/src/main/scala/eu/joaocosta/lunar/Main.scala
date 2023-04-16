@@ -161,6 +161,5 @@ object Main {
       }
       .configure(canvasSettings, frameRate, AppState.initial)
       .run()
-      .onComplete(res => println("FINISHED: " + res))(scala.concurrent.ExecutionContext.global)
   }
 }

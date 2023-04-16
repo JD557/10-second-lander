@@ -10,7 +10,12 @@ final case class Level(
 
 object Level {
   def generate(number: Int, random: util.Random) = {
-    val dificultyMod = math.min(number / 4, 2).toInt
+    val (hills, dificultyMod) = number match {
+      case n if n <= 2 => (true, 0)
+      case n if n <= 4 => (false, 0)
+      case n if n <= 6 => (false, 1)
+      case _           => (false, 2)
+    }
 
     val padRange = 256 + 64 * dificultyMod
 
@@ -31,11 +36,12 @@ object Level {
     }
     val padX = {
       val candidates =
-        if (random.nextBoolean) (-padRange to (padRange - 32) by 8)
-        else (-padRange to (padRange - 32) by 8).reverse
+        if (random.nextBoolean) (-padRange to (padRange - Constants.padSize) by 4)
+        else (-padRange to (padRange - Constants.padSize) by 4).reverse
       candidates.minBy { x =>
-        val thisHeight = (height(x) + height(x + 32)) / 2
-        math.min(thisHeight - minHeight, maxHeight - thisHeight)
+        val thisHeight = (height(x) + height(x + Constants.padSize / 2) + height(x + Constants.padSize)) / 3
+        // math.min(thisHeight - minHeight, maxHeight - thisHeight)
+        if (hills) thisHeight else -thisHeight
       }
     }
     new Level(number, height, padX)

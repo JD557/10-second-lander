@@ -12,7 +12,6 @@ object AppState {
     private val fullPlayerSize = 46
     private val playerBorder   = (fullPlayerSize - playerSize) / 2
     private val collisionH     = fullPlayerSize - playerBorder
-    private val padSize        = 64
 
     val overRotated          = math.cos(player.rotation) < Constants.minCosRotation
     val landingSpeedExceeded = player.vy >= Constants.maxTouchSpeed
@@ -20,11 +19,11 @@ object AppState {
     val touchedPadPartial =
       player.y + collisionH >= level.padY &&
         player.x + fullPlayerSize - playerBorder >= level.padX &&
-        player.x + playerBorder < level.padX + padSize
+        player.x + playerBorder < level.padX + Constants.padSize
     val touchedPadFull =
       touchedPadPartial &&
         player.x + playerBorder + 5 >= level.padX &&
-        player.x + fullPlayerSize - playerBorder - 5 < level.padX + padSize
+        player.x + fullPlayerSize - playerBorder - 5 < level.padX + Constants.padSize
     val finished = touchedPadFull && !gameOver
     val gameOver =
       remainingTime <= 0 || (touchedPadPartial && !touchedPadFull) ||
