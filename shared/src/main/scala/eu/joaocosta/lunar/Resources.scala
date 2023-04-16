@@ -7,30 +7,30 @@ import eu.joaocosta.minart.runtime._
 
 object Resources {
   lazy val lander = SpriteSheet(
-    Image.loadBmpImage(Resource("assets/lander.bmp")).get,
+    Image.loadQoiImage(Resource("assets/lander.qoi")).get,
     32,
     32
   )
   lazy val numbers = SpriteSheet(
-    Image.loadBmpImage(Resource("assets/numbers.bmp")).get,
+    Image.loadQoiImage(Resource("assets/numbers.qoi")).get,
     16,
     16
   )
   lazy val warnings = SpriteSheet(
-    Image.loadBmpImage(Resource("assets/warnings.bmp")).get,
+    Image.loadQoiImage(Resource("assets/warnings.qoi")).get,
     38,
     12
   )
   lazy val pad = SpriteSheet(
-    Image.loadBmpImage(Resource("assets/pad.bmp")).get,
+    Image.loadQoiImage(Resource("assets/pad.qoi")).get,
     Constants.padSize,
     8
   )
-  lazy val space    = Image.loadBmpImage(Resource("assets/space.bmp")).get
-  lazy val hud      = Image.loadBmpImage(Resource("assets/hud.bmp")).get
-  lazy val gameover = Image.loadBmpImage(Resource("assets/gameover.bmp")).get
-  lazy val menu     = Image.loadBmpImage(Resource("assets/menu.bmp")).get
-  lazy val moon     = Image.loadBmpImage(Resource("assets/moon.bmp")).get
+  lazy val space    = Image.loadQoiImage(Resource("assets/space.qoi")).get
+  lazy val hud      = Image.loadQoiImage(Resource("assets/hud.qoi")).get
+  lazy val gameover = Image.loadQoiImage(Resource("assets/gameover.qoi")).get
+  lazy val menu     = Image.loadQoiImage(Resource("assets/menu.qoi")).get
+  lazy val moon     = Image.loadQoiImage(Resource("assets/moon.qoi")).get
 
   lazy val beep         = Sound.loadWavClip(Resource("assets/beep.wav")).get
   lazy val gameoverBeep = Sound.loadWavClip(Resource("assets/gameover-beep.wav")).get
