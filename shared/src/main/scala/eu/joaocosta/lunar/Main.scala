@@ -1,6 +1,7 @@
 package eu.joaocosta.lunar
 
 import eu.joaocosta.minart.backend.defaults._
+import eu.joaocosta.minart.audio._
 import eu.joaocosta.minart.graphics._
 import eu.joaocosta.minart.runtime._
 import eu.joaocosta.minart.input._
@@ -96,7 +97,7 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     AppLoop
-      .statefulRenderLoop[AppState] {
+      .statefulAppLoop[AppState] {
         case AppState.Loading(_, Nil) => (_) => AppState.Menu
         case state @ AppState.Loading(loaded, loadNext :: remaining) =>
           (canvas: Canvas) => {
@@ -107,23 +108,25 @@ object Main {
             AppState.Loading(loaded + 1, remaining)
           }
         case state @ AppState.Menu =>
-          (canvas: Canvas) => {
-            val keyboardInput = canvas.getKeyboardInput()
-            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
-            canvas.clear()
-            renderAppState(state)(canvas)
-            canvas.redraw()
-            if (keyboardInput.isDown(Key.Enter)) AppState.Transition(state, AppState.startGame(1))
-            else AppState.Menu
+          (system: Canvas with AudioPlayer) => {
+            val keyboardInput = system.getKeyboardInput()
+            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(system)
+            system.clear()
+            renderAppState(state)(system)
+            system.redraw()
+            if (keyboardInput.isDown(Key.Enter)) {
+              system.play(Resources.transition, 1)
+              AppState.Transition(state, AppState.startGame(1))
+            } else AppState.Menu
           }
         case state @ AppState.InGame(player, level, time) =>
-          (canvas: Canvas) => {
+          (system: Canvas with AudioPlayer) => {
             frameCounter()
-            val keyboardInput = canvas.getKeyboardInput()
-            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
-            canvas.clear()
-            renderAppState(state)(canvas)
-            canvas.redraw()
+            val keyboardInput = system.getKeyboardInput()
+            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(system)
+            system.clear()
+            renderAppState(state)(system)
+            system.redraw()
             val newPlayer = player
               .pipe(p =>
                 if (keyboardInput.isDown(Key.Left)) p.rotateCcw
@@ -131,24 +134,39 @@ object Main {
                 else p
               )
               .pipe(p =>
-                if (keyboardInput.isDown(Key.Space) || keyboardInput.isDown(Key.Up)) p.thrust
-                else p.stop
+                if (keyboardInput.isDown(Key.Space) || keyboardInput.isDown(Key.Up)) {
+                  if (!system.isPlaying(2)) system.play(Resources.jet, 2)
+                  p.thrust
+                } else {
+                  system.stop(2)
+                  p.stop
+                }
               )
-            val newState = AppState.InGame(newPlayer.tick, level, time - (frameRate.millis / 10).toInt)
-            if (newState.gameOver) AppState.GameOver(newState)
-            else if (newState.finished) AppState.Transition(state, AppState.startGame(level.number + 1))
-            else newState
+            val newTime  = time - (frameRate.millis / 10).toInt
+            val newState = AppState.InGame(newPlayer.tick, level, newTime)
+            if (newTime <= 500 && time / 100 != newTime / 100) system.play(Resources.beep, 1)
+            if (newState.gameOver) {
+              system.play(Resources.gameoverBeep, 1)
+              AppState.GameOver(newState)
+            } else if (newState.finished) {
+              system.play(Resources.transition, 1)
+              AppState.Transition(state, AppState.startGame(level.number + 1))
+            } else newState
           }
         case state @ AppState.GameOver(lastState) =>
-          (canvas: Canvas) => {
-            val keyboardInput = canvas.getKeyboardInput()
-            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
-            canvas.clear()
-            renderAppState(state)(canvas)
-            canvas.redraw()
-            if (keyboardInput.isDown(Key.Enter)) AppState.Transition(state, AppState.startGame(1))
-            else if (keyboardInput.isDown(Key.Escape)) AppState.Menu
-            else AppState.GameOver(lastState)
+          (system: Canvas with AudioPlayer) => {
+            val keyboardInput = system.getKeyboardInput()
+            if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(system)
+            system.clear()
+            renderAppState(state)(system)
+            system.redraw()
+            if (keyboardInput.isDown(Key.Enter)) {
+              system.play(Resources.transition, 1)
+              AppState.Transition(state, AppState.startGame(1))
+            } else if (keyboardInput.isDown(Key.Escape)) {
+              system.play(Resources.transition, 1)
+              AppState.Transition(state, AppState.Menu)
+            } else state
           }
         case state @ AppState.Transition(from, to, t) =>
           (canvas: Canvas) => {
@@ -159,7 +177,7 @@ object Main {
             else AppState.Transition(from, to, t + frameRate.millis.toInt)
           }
       }
-      .configure(canvasSettings, frameRate, AppState.initial)
+      .configure((canvasSettings, AudioPlayer.Settings()), frameRate, AppState.initial)
       .run()
   }
 }

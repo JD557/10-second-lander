@@ -1,6 +1,7 @@
 package eu.joaocosta.lunar
 
 import eu.joaocosta.minart.backend.defaults._
+import eu.joaocosta.minart.audio.sound._
 import eu.joaocosta.minart.graphics.image._
 import eu.joaocosta.minart.runtime._
 
@@ -31,6 +32,11 @@ object Resources {
   lazy val menu     = Image.loadBmpImage(Resource("assets/menu.bmp")).get
   lazy val moon     = Image.loadBmpImage(Resource("assets/moon.bmp")).get
 
+  lazy val beep         = Sound.loadWavClip(Resource("assets/beep.wav")).get
+  lazy val gameoverBeep = Sound.loadWavClip(Resource("assets/gameover-beep.wav")).get
+  lazy val transition   = Sound.loadWavClip(Resource("assets/transition.wav")).get
+  lazy val jet          = Sound.loadWavClip(Resource("assets/jet.wav")).get
+
   val allResources: List[() => Any] = List(
     () => lander,
     () => numbers,
@@ -39,6 +45,10 @@ object Resources {
     () => hud,
     () => gameover,
     () => menu,
-    () => moon
+    () => moon,
+    () => beep,
+    () => gameoverBeep,
+    () => transition,
+    () => jet
   )
 }
