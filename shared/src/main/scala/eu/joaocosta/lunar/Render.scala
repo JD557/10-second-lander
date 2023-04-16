@@ -71,12 +71,12 @@ object Render {
       }
       else (Resources.moon.view.repeating)
     val buffer = moonSurfacePlane
-      .flatMap{
-        val memoized: mutable.Map[Int, Int] = mutable.Map[Int, Int]()
-        (c: Color) => (x: Int, y: Int) => if (y >= memoized.getOrElseUpdate(x, level.groundLine(x).toInt)) c else Color(255, 0, 255)
-      }
       .clip(-cameraX, -cameraY, bufferWidth, bufferHeight)
       .toRamSurface()
+    (0 until buffer.width).foreach { x =>
+      val height = level.groundLine(x - cameraX) + cameraY
+      buffer.fillRegion(x, 0, 1, math.min(height.toInt, bufferHeight - 1), Color(255, 0, 255))
+    }
     buffer.blit(Resources.pad.getSprite(if (level.night) 1 else 0), Some(Color(255, 0, 255)))(level.padX + cameraX, level.padY + cameraY)
     buffer
       .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX.toInt, fixedPlayerY.toInt)
