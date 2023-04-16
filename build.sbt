@@ -26,7 +26,10 @@ lazy val root =
         nativeLinkStubs := true,
         nativeMode      := "release",
         nativeLTO       := "thin",
-        nativeGC        := "commix"
+        nativeGC        := "commix",
+        nativeConfig ~= {
+          _.withEmbedResources(true)
+        }
       )
     )
     .settings(name := "10 Second Lunar Lander Root")
