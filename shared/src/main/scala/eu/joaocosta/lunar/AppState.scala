@@ -3,8 +3,8 @@ package eu.joaocosta.lunar
 sealed trait AppState
 
 object AppState {
-  val initial   = Loading(0, Resources.allResources)
-  def startGame = AppState.InGame(Player(0, 0, 0, 0), Level.generate(util.Random), 999)
+  val initial               = Loading(0, Resources.allResources)
+  def startGame(level: Int) = AppState.InGame(Player(0, 0, 0, 0), Level.generate(level, util.Random), 999)
   case object Menu                                                          extends AppState
   final case class Loading(loaded: Int, remainingResouces: List[() => Any]) extends AppState
   final case class InGame(player: Player, level: Level, remainingTime: Int) extends AppState {

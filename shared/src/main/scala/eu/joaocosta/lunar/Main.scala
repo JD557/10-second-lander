@@ -59,7 +59,7 @@ object Main {
             canvas.clear()
             Render.renderMenu(canvas)
             canvas.redraw()
-            if (keyboardInput.isDown(Key.Enter)) AppState.startGame
+            if (keyboardInput.isDown(Key.Enter)) AppState.startGame(1)
             else AppState.Menu
           }
         case state @ AppState.InGame(player, level, time) =>
@@ -69,7 +69,7 @@ object Main {
             if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()
             Render.renderLevel(player, level)(canvas)
-            Render.renderHud(time, state.landingSpeedExceeded, state.overRotated)(canvas)
+            Render.renderHud(time, state.level.number, state.landingSpeedExceeded, state.overRotated)(canvas)
             canvas.redraw()
             val newPlayer = player
               .pipe(p =>
@@ -83,7 +83,7 @@ object Main {
               )
             val newState = AppState.InGame(newPlayer.tick, level, time - (frameRate.millis / 10).toInt)
             if (newState.gameOver) AppState.GameOver(newState)
-            else if (newState.finished) AppState.startGame
+            else if (newState.finished) AppState.startGame(level.number + 1)
             else newState
           }
         case AppState.GameOver(lastState) =>
@@ -93,7 +93,7 @@ object Main {
             canvas.clear()
             Render.renderGameOver(lastState)(canvas)
             canvas.redraw()
-            if (keyboardInput.isDown(Key.Enter)) AppState.startGame
+            if (keyboardInput.isDown(Key.Enter)) AppState.startGame(1)
             else if (keyboardInput.isDown(Key.Escape)) AppState.Menu
             else AppState.GameOver(lastState)
           }

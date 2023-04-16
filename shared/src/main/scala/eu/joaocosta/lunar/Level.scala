@@ -1,6 +1,7 @@
 package eu.joaocosta.lunar
 
 final case class Level(
+    number: Int,
     groundLine: Double => Double,
     padX: Int
 ) {
@@ -8,7 +9,7 @@ final case class Level(
 }
 
 object Level {
-  def generate(random: util.Random) = {
+  def generate(number: Int, random: util.Random) = {
     val lowFreq      = 64 + random.nextInt(16)
     val lowFreqPhase = random.nextDouble() * 2 * math.Pi
     val highFreq     = 16 + random.nextInt(16)
@@ -29,6 +30,6 @@ object Level {
         math.min(thisHeight - minHeight, maxHeight - thisHeight)
       }
     }
-    new Level(height, padX)
+    new Level(number, height, padX)
   }
 }
