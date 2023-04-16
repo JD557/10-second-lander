@@ -73,9 +73,9 @@ object Render {
     val buffer = moonSurfacePlane
       .clip(-cameraX, -cameraY, bufferWidth, bufferHeight)
       .toRamSurface()
-    (0 until buffer.width).foreach { x =>
+    (0 until buffer.width - 1 by 2).foreach { x =>
       val height = level.groundLine(x - cameraX) + cameraY
-      buffer.fillRegion(x, 0, 1, math.min(height.toInt, bufferHeight - 1), Color(255, 0, 255))
+      buffer.fillRegion(x, 0, 2, math.min(height.toInt, bufferHeight - 1), Color(255, 0, 255))
     }
     buffer.blit(Resources.pad.getSprite(if (level.night) 1 else 0), Some(Color(255, 0, 255)))(level.padX + cameraX, level.padY + cameraY)
     buffer
