@@ -4,6 +4,8 @@ object Constants {
   val canvasWidth  = 480
   val canvasHeight = 270
 
+  val transitionMillis = 500
+
   // Multiplied by 2 due to 30 FPS cap
   val rotationSpeed  = 0.05 * 2
   val gravity        = 0.025 * 2

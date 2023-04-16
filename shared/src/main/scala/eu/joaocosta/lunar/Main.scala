@@ -39,27 +39,81 @@ object Main {
     }
   }
 
+  def renderAppState(appState: AppState)(out: MutableSurface): Unit = appState match {
+    case AppState.Loading(loaded, remaining) =>
+      val progress = loaded.toDouble / (loaded + remaining.size)
+      Render.renderLoading(progress)(out)
+    case AppState.Menu =>
+      Render.renderMenu(out)
+    case state @ AppState.InGame(player, level, time) =>
+      Render.renderLevel(player, level)(out)
+      Render.renderHud(time, state.level.number, state.landingSpeedExceeded, state.overRotated)(out)
+    case AppState.GameOver(lastState) =>
+      Render.renderGameOver(lastState)(out)
+    case AppState.Transition(from, to, t) =>
+      val halfTransition = Constants.transitionMillis / 2
+      val halfHeight     = out.height / 2
+      if (t < halfTransition) {
+        renderAppState(from)(out)
+        // TODO Find out the bug here
+        // out.fillRegion(0, 0, out.width, out.height * t / Constants.transitionMillis, Color(0, 0, 0))
+        val transitionSize = math.min(out.height * t / halfTransition / 2, halfHeight).toInt
+        out.fillRegion(
+          0,
+          halfHeight - transitionSize,
+          out.width,
+          transitionSize,
+          Color(0, 0, 0)
+        )
+        out.fillRegion(
+          0,
+          halfHeight,
+          out.width,
+          transitionSize,
+          Color(0, 0, 0)
+        )
+      } else {
+        renderAppState(to)(out)
+        val transitionSize =
+          math.min(out.height * (Constants.transitionMillis - t) / halfTransition / 2, halfHeight).toInt
+        out.fillRegion(
+          0,
+          halfHeight - transitionSize,
+          out.width,
+          transitionSize,
+          Color(0, 0, 0)
+        )
+        out.fillRegion(
+          0,
+          halfHeight,
+          out.width,
+          transitionSize,
+          Color(0, 0, 0)
+        )
+
+      }
+  }
+
   def main(args: Array[String]): Unit = {
     AppLoop
       .statefulRenderLoop[AppState] {
         case AppState.Loading(_, Nil) => (_) => AppState.Menu
-        case AppState.Loading(loaded, loadNext :: remaining) =>
-          val progress = loaded.toDouble / (loaded + remaining.size)
+        case state @ AppState.Loading(loaded, loadNext :: remaining) =>
           (canvas: Canvas) => {
             canvas.clear()
-            Render.renderLoading(progress)(canvas)
+            renderAppState(state)(canvas)
             canvas.redraw()
             loadNext()
             AppState.Loading(loaded + 1, remaining)
           }
-        case AppState.Menu =>
+        case state @ AppState.Menu =>
           (canvas: Canvas) => {
             val keyboardInput = canvas.getKeyboardInput()
             if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()
-            Render.renderMenu(canvas)
+            renderAppState(state)(canvas)
             canvas.redraw()
-            if (keyboardInput.isDown(Key.Enter)) AppState.startGame(1)
+            if (keyboardInput.isDown(Key.Enter)) AppState.Transition(state, AppState.startGame(1))
             else AppState.Menu
           }
         case state @ AppState.InGame(player, level, time) =>
@@ -68,8 +122,7 @@ object Main {
             val keyboardInput = canvas.getKeyboardInput()
             if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()
-            Render.renderLevel(player, level)(canvas)
-            Render.renderHud(time, state.level.number, state.landingSpeedExceeded, state.overRotated)(canvas)
+            renderAppState(state)(canvas)
             canvas.redraw()
             val newPlayer = player
               .pipe(p =>
@@ -83,22 +136,31 @@ object Main {
               )
             val newState = AppState.InGame(newPlayer.tick, level, time - (frameRate.millis / 10).toInt)
             if (newState.gameOver) AppState.GameOver(newState)
-            else if (newState.finished) AppState.startGame(level.number + 1)
+            else if (newState.finished) AppState.Transition(state, AppState.startGame(level.number + 1))
             else newState
           }
-        case AppState.GameOver(lastState) =>
+        case state @ AppState.GameOver(lastState) =>
           (canvas: Canvas) => {
             val keyboardInput = canvas.getKeyboardInput()
             if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(canvas)
             canvas.clear()
-            Render.renderGameOver(lastState)(canvas)
+            renderAppState(state)(canvas)
             canvas.redraw()
-            if (keyboardInput.isDown(Key.Enter)) AppState.startGame(1)
+            if (keyboardInput.isDown(Key.Enter)) AppState.Transition(state, AppState.startGame(1))
             else if (keyboardInput.isDown(Key.Escape)) AppState.Menu
             else AppState.GameOver(lastState)
+          }
+        case state @ AppState.Transition(from, to, t) =>
+          (canvas: Canvas) => {
+            canvas.clear()
+            renderAppState(state)(canvas)
+            canvas.redraw()
+            if (t >= Constants.transitionMillis) to
+            else AppState.Transition(from, to, t + frameRate.millis.toInt)
           }
       }
       .configure(canvasSettings, frameRate, AppState.initial)
       .run()
+      .onComplete(res => println("FINISHED: " + res))(scala.concurrent.ExecutionContext.global)
   }
 }

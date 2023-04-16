@@ -31,5 +31,6 @@ object AppState {
         (touchedPadFull && (landingSpeedExceeded || overRotated)) ||
         (player.y + collisionH) > level.groundLine(player.x + fullPlayerSize / 2)
   }
-  final case class GameOver(lastState: InGame) extends AppState
+  final case class GameOver(lastState: InGame)                          extends AppState
+  final case class Transition(from: AppState, to: AppState, t: Int = 0) extends AppState
 }
