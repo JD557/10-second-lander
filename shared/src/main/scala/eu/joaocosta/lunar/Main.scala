@@ -18,7 +18,7 @@ object Main {
 
   val fullScreenSettings = canvasSettings.copy(fullScreen = true, scale = None)
 
-  val frameRate = LoopFrequency.hz60
+  val frameRate = LoopFrequency.hz30
 
   def toggleFullScreen(canvas: Canvas): Unit = {
     if (canvas.canvasSettings.fullScreen) canvas.changeSettings(canvasSettings)
