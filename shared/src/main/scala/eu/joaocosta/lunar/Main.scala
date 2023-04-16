@@ -121,7 +121,7 @@ object Main {
           }
         case state @ AppState.InGame(player, level, time) =>
           (system: Canvas with AudioPlayer) => {
-            frameCounter()
+            // frameCounter()
             val keyboardInput = system.getKeyboardInput()
             if (keyboardInput.keysPressed(Key.F)) toggleFullScreen(system)
             system.clear()
