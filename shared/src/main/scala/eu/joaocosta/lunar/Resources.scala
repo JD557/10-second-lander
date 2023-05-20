@@ -32,10 +32,10 @@ object Resources {
   lazy val menu     = Image.loadQoiImage(Resource("assets/menu.qoi")).get
   lazy val moon     = Image.loadQoiImage(Resource("assets/moon.qoi")).get
 
-  lazy val beep         = Sound.loadWavClip(Resource("assets/beep.wav")).get
-  lazy val gameoverBeep = Sound.loadWavClip(Resource("assets/gameover-beep.wav")).get
-  lazy val transition   = Sound.loadWavClip(Resource("assets/transition.wav")).get
-  lazy val jet          = Sound.loadWavClip(Resource("assets/jet.wav")).get
+  lazy val beep         = Sound.loadQoaClip(Resource("assets/beep.qoa")).get
+  lazy val gameoverBeep = Sound.loadQoaClip(Resource("assets/gameover-beep.qoa")).get
+  lazy val transition   = Sound.loadQoaClip(Resource("assets/transition.qoa")).get
+  lazy val jet          = Sound.loadQoaClip(Resource("assets/jet.qoa")).get
 
   val allResources: List[() => Any] = List(
     () => lander,

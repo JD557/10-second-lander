@@ -135,7 +135,9 @@ object Main {
               )
               .pipe(p =>
                 if (keyboardInput.isDown(Key.Space) || keyboardInput.isDown(Key.Up)) {
-                  if (!system.isPlaying(2)) system.play(Resources.jet, 2)
+                  if (!system.isPlaying(2)) {
+                    system.play(Resources.jet.repeating, 2)
+                  }
                   p.thrust
                 } else {
                   system.stop(2)
