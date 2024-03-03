@@ -1,10 +1,11 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+import scala.scalanative.build._
 
 name := "10 Second Lunar Lander"
 
-version := "1.0"
+version := "1.1"
 
-ThisBuild / scalaVersion := "3.2.2"
+ThisBuild / scalaVersion := "3.3.3"
 
 lazy val root =
   crossProject(JVMPlatform, JSPlatform, NativePlatform)
@@ -12,7 +13,7 @@ lazy val root =
     .settings(
       Seq(
         libraryDependencies ++= List(
-          "eu.joaocosta" %%% "minart" % "0.5.2"
+          "eu.joaocosta" %%% "minart" % "0.6.0-M3"
         )
       )
     )
@@ -23,12 +24,13 @@ lazy val root =
     )
     .nativeSettings(
       Seq(
-        nativeLinkStubs := true,
-        nativeMode      := "release",
-        nativeLTO       := "thin",
-        nativeGC        := "commix",
         nativeConfig ~= {
-          _.withEmbedResources(true)
+          _
+          .withLinkStubs(true)
+          .withMode(Mode.releaseFull)
+          .withLTO(LTO.thin)
+          .withGC(GC.commix)
+          .withEmbedResources(true)
         }
       )
     )

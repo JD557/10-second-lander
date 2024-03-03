@@ -34,7 +34,7 @@ object Render {
   private var frame = 0
   def renderMenu(out: MutableSurface): Unit = {
     out.blit(backgroundPlane.clip(frame, 0, out.width, out.height))(0, 0)
-    out.blit(Resources.menu, Some(Color(0, 0, 0)))(0, 0)
+    out.blit(Resources.menu, BlendMode.ColorMask(Color(0, 0, 0)))(0, 0)
     frame = frame + 1
   }
 
@@ -78,35 +78,35 @@ object Render {
       buffer.fillRegion(x, 0, 2, math.min(height, bufferHeight - 1), Color(255, 0, 255))
       buffer.fillRegion(x, height, 2, math.min(3, bufferHeight - height - 4), Color(105, 106, 106))
     }
-    buffer.blit(Resources.pad.getSprite(if (level.night) 1 else 0), Some(Color(255, 0, 255)))(level.padX + cameraX, level.padY + cameraY)
+    buffer.blit(Resources.pad.getSprite(if (level.night) 1 else 0), BlendMode.ColorMask(Color(255, 0, 255)))(level.padX + cameraX, level.padY + cameraY)
     buffer
-      .blit(landerSprite, Some(Color(0, 0, 0)))(fixedPlayerX.toInt, fixedPlayerY.toInt)
+      .blit(landerSprite, BlendMode.ColorMask(Color(0, 0, 0)))(fixedPlayerX.toInt, fixedPlayerY.toInt)
     frame = frame + 1
 
     out.blit(backgroundPlane.clip(-cameraX/8, -cameraY/8, out.width, out.height))(0, 0)
-    out.blit(buffer.view.scale(scale), Some(Color(255, 0, 255)))(0, 0)
+    out.blit(buffer.view.scale(scale), BlendMode.ColorMask(Color(255, 0, 255)))(0, 0)
   }
 
 
   def renderHud(remainingTime: Int, level: Int, speedWarning: Boolean, angleWarning: Boolean)(out: MutableSurface): Unit = {
-    out.blit(Resources.hud, Some(Color(0, 0, 0)))(0, 0)
+    out.blit(Resources.hud, BlendMode.ColorMask(Color(0, 0, 0)))(0, 0)
 
     val sec       = remainingTime / 100
     val dsec      = (remainingTime / 10) % 10
     val csec      = remainingTime        % 10
     val textStart = (out.width - 64) / 2
-    out.blit(Resources.numbers.getSprite(sec + 1), Some(Color(0, 0, 0)))(textStart + 0, 16)
-    out.blit(Resources.numbers.getSprite(0), Some(Color(0, 0, 0)))(textStart + 16, 16)
-    out.blit(Resources.numbers.getSprite(dsec + 1), Some(Color(0, 0, 0)))(textStart + 32, 16)
-    out.blit(Resources.numbers.getSprite(csec + 1), Some(Color(0, 0, 0)))(textStart + 48, 16)
+    out.blit(Resources.numbers.getSprite(sec + 1), BlendMode.ColorMask(Color(0, 0, 0)))(textStart + 0, 16)
+    out.blit(Resources.numbers.getSprite(0), BlendMode.ColorMask(Color(0, 0, 0)))(textStart + 16, 16)
+    out.blit(Resources.numbers.getSprite(dsec + 1), BlendMode.ColorMask(Color(0, 0, 0)))(textStart + 32, 16)
+    out.blit(Resources.numbers.getSprite(csec + 1), BlendMode.ColorMask(Color(0, 0, 0)))(textStart + 48, 16)
 
     val levelTenths = level / 10
     val levelUnits = level % 10
-    out.blit(Resources.numbers.getSprite(levelTenths + 1), Some(Color(0, 0, 0)))(64, 16)
-    out.blit(Resources.numbers.getSprite(levelUnits + 1), Some(Color(0, 0, 0)))(80, 16)
+    out.blit(Resources.numbers.getSprite(levelTenths + 1), BlendMode.ColorMask(Color(0, 0, 0)))(64, 16)
+    out.blit(Resources.numbers.getSprite(levelUnits + 1), BlendMode.ColorMask(Color(0, 0, 0)))(80, 16)
 
-    out.blit(Resources.warnings.getSprite(if (speedWarning) 1 else 0, 1), Some(Color(0, 0, 0)))(432, 227)
-    out.blit(Resources.warnings.getSprite(if (angleWarning) 1 else 0, 0), Some(Color(0, 0, 0)))(432, 243)
+    out.blit(Resources.warnings.getSprite(if (speedWarning) 1 else 0, 1), BlendMode.ColorMask(Color(0, 0, 0)))(432, 227)
+    out.blit(Resources.warnings.getSprite(if (angleWarning) 1 else 0, 0), BlendMode.ColorMask(Color(0, 0, 0)))(432, 243)
   }
 
   def renderGameOver(lastState: AppState.InGame)(out: MutableSurface): Unit = {
@@ -123,6 +123,6 @@ object Render {
       if (y == glitchLine) (x - glitchDelta, y)
       else (x, y)
     }.toSurfaceView(Resources.gameover.width, Resources.gameover.height)
-    out.blit(glitchedGameOver, Some(Color(0, 0, 0)))((out.width - Resources.gameover.width) / 2, out.height / 2)
+    out.blit(glitchedGameOver, BlendMode.ColorMask(Color(0, 0, 0)))((out.width - Resources.gameover.width) / 2, out.height / 2)
   }
 }
