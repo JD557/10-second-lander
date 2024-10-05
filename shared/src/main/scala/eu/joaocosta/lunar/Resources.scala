@@ -1,6 +1,6 @@
 package eu.joaocosta.lunar
 
-import eu.joaocosta.minart.backend.defaults._
+import eu.joaocosta.minart.backend.defaults.given
 import eu.joaocosta.minart.audio.sound._
 import eu.joaocosta.minart.graphics.image._
 import eu.joaocosta.minart.runtime._
