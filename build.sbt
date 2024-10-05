@@ -5,7 +5,7 @@ name := "10 Second Lunar Lander"
 
 version := "1.1"
 
-ThisBuild / scalaVersion := "3.3.3"
+ThisBuild / scalaVersion := "3.3.4"
 
 lazy val root =
   crossProject(JVMPlatform, JSPlatform, NativePlatform)
@@ -13,7 +13,7 @@ lazy val root =
     .settings(
       Seq(
         libraryDependencies ++= List(
-          "eu.joaocosta" %%% "minart" % "0.6.0-M3"
+          "eu.joaocosta" %%% "minart" % "0.6.1"
         )
       )
     )
